@@ -1,14 +1,22 @@
 import { Routes } from "@/constants/enums";
 import Link from "../link";
+import Navbar from "./Navbar";
 
 const Header = () => {
   return (
-    <header>
-      <div className="container">
-        <Link href={Routes.ROOT}>🍕 Pizza</Link>
+    <header className="md:py-6 py-4">
+      <div className="container flex items-center justify-between">
+        <Link
+          href={Routes.ROOT}
+          className="text-primary font-semibold text-2xl"
+        >
+          🍕 Pizza
+        </Link>
+        <Navbar />
       </div>
     </header>
   );
 };
 
 export default Header;
+// 47 m
