@@ -24,4 +24,19 @@ model Product {
   basePrice   Float
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  sizes       Size[]
+}
+
+model Size {
+  id        String      @id @default(cuid())
+  name      ProductSize
+  price     Float
+  Product   Product?    @relation(fields: [productId], references: [id])
+  productId String?
+}
+
+enum ProductSize {
+  SMALL
+  MEDIUM
+  LARGE
 }
