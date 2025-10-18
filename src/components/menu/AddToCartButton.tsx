@@ -25,7 +25,7 @@ const AddToCartButton = ({ item }: { item: ProductWithRelations }) => {
     <Dialog>
       <form>
         <DialogTrigger asChild>
-          <Button variant="outline">Open Dialog</Button>
+          <Button className="block mx-auto w-[90%] h-10">Add To Cart</Button>
         </DialogTrigger>
 
         <DialogContent className="sm:max-w-[425px] max-h-[95vh] overflow-y-auto">
