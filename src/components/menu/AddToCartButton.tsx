@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,21 +10,10 @@ import {
 } from "@/components/ui/dialog";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import Image from "next/image";
-// import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const AddToCartButton = ({ item }: { item: any }) => {
-  const sizes = [
-    { id: crypto.randomUUID(), name: "Small", price: 0 },
-    { id: crypto.randomUUID(), name: "mid", price: 4 },
-    { id: crypto.randomUUID(), name: "Lg", price: 8 },
-  ];
-  const extras = [
-    { id: crypto.randomUUID(), name: "Small", price: 0 },
-    { id: crypto.randomUUID(), name: "mid", price: 4 },
-    { id: crypto.randomUUID(), name: "Lg", price: 8 },
-  ];
+import { ProductWithRelations } from "@/types/product";
+import { Extra, Size } from "@prisma/client";
+const AddToCartButton = ({ item }: { item: ProductWithRelations }) => {
   return (
     // <Button
     //   type="button"
@@ -57,14 +45,14 @@ const AddToCartButton = ({ item }: { item: any }) => {
               <Label className="block" htmlFor="pick-size">
                 Pick your size
               </Label>
-              <PickSize sizes={sizes} item={item} />
+              <PickSize sizes={item.sizes} item={item} />
             </div>
 
             <div className="space-y-4 text-center">
               <Label className="block" htmlFor="pick-size">
                 Extras
               </Label>
-              <Extras extras={extras} />
+              <Extras extras={item.extras} />
             </div>
           </div>
 
@@ -88,8 +76,13 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { formatCurrency } from "@/lib/formatCurrency";
 import { Checkbox } from "../ui/checkbox";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function PickSize({ sizes, item }: { sizes: any; item: any }) {
+export function PickSize({
+  sizes,
+  item,
+}: {
+  sizes: Size[];
+  item: ProductWithRelations;
+}) {
   return (
     <RadioGroup defaultValue="comfortable">
       {sizes.map((size) => (
@@ -106,7 +99,7 @@ export function PickSize({ sizes, item }: { sizes: any; item: any }) {
     </RadioGroup>
   );
 }
-export function Extras({ extras }: { extras: any }) {
+export function Extras({ extras }: { extras: Extra[] }) {
   return (
     <RadioGroup defaultValue="comfortable">
       {extras.map((extra) => (

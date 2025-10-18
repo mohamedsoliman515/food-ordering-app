@@ -1,9 +1,9 @@
 import { formatCurrency } from "@/lib/formatCurrency";
 import Image from "next/image";
 import AddToCartButton from "./AddToCartButton";
+import { ProductWithRelations } from "@/types/product";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const MenuItem = ({ item }: { item: any }) => {
+const MenuItem = ({ item }: { item: ProductWithRelations }) => {
   return (
     <li key={item.id}>
       <div className="relative w-48 h-48 mx-auto">

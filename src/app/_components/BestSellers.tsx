@@ -3,13 +3,21 @@ import Menu from "@/components/menu";
 import { db } from "@/lib/prisma";
 
 const BestSellers = async () => {
+  const bestSellers = await db.product.findMany({
+    include: {
+      sizes: true,
+      extras: true,
+    },
+  });
+  console.log(bestSellers);
+
   return (
     <section>
       <div className="container">
         <div className="text-center mb-4">
           <MainHeading subTitle="checkOut" title="Our Best Seller" />
         </div>
-        <Menu items={} />
+        <Menu items={bestSellers} />
       </div>
     </section>
   );
