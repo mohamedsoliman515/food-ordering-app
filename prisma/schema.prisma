@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  // output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -14,18 +13,47 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  password      String
+  name          String
+  image         String?
+  phone         String?
+  streetAddress String?
+  postalCode    String?
+  city          String?
+  country       String?
+  // role          UserRole       @default(USER)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  orders        OrderProduct[]
+  // accounts      Account[]
+  // sessions      Session[]
+}
+
 model Product {
-  id          String   @id @default(cuid())
+  id          String         @id @default(cuid())
   name        String
   description String
   price       Float
   image       String
   order       Int
   basePrice   Float
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
   sizes       Size[]
   extras      Extra[]
+  orders      OrderProduct[]
+  categoryId  String
+  Category    Category       @relation(fields: [categoryId], references: [id])
+}
+
+model Category {
+  id       String    @id @default(uuid())
+  name     String
+  order    Int       @default(autoincrement())
+  products Product[]
 }
 
 model Size {
@@ -44,6 +72,35 @@ model Extra {
   productId String?
 }
 
+model Order {
+  id            String         @id @default(uuid())
+  paid          Boolean        @default(false)
+  subTotal      Float
+  deliveryFee   Float
+  totalPrice    Float
+  userEmail     String
+  phone         String
+  streetAddress String
+  postalCode    String
+  city          String
+  country       String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  products      OrderProduct[]
+}
+
+model OrderProduct {
+  id       String @id @default(cuid())
+  quantity Int
+
+  Order     Order   @relation(fields: [orderId], references: [id])
+  orderId   String
+  User      User?   @relation(fields: [userId], references: [id])
+  userId    String?
+  Product   Product @relation(fields: [productId], references: [id])
+  productId String
+}
+
 enum ProductSize {
   SMALL
   MEDIUM
@@ -57,4 +114,9 @@ enum ProductExtra {
   ONIONS
   PEPPERS
   TOMATOES
+}
+
+enum UserRole {
+  USER
+  ADMIN
 }
