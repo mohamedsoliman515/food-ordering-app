@@ -1,7 +1,7 @@
 import MainHeading from "@/components/main-heading";
 import { Routes } from "@/constants/enums";
 
-const Contact = async () => {
+const Contact = () => {
   return (
     <section className="section-gap" id={Routes.CONTACT}>
       <div className="container text-center">
