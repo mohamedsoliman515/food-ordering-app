@@ -27,7 +27,6 @@ export default function RootLayout({
         {children}
         <Footer />
       </body>
-      {/*layout: children change content*/}
     </html>
   );
 }
