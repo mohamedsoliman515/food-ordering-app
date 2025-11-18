@@ -1,12 +1,17 @@
 "use client";
 import { formatCurrency } from "@/lib/formatCurrency";
-import { selectCartItems } from "@/redux/features/cart/cartSlice";
-import { useAppSelector } from "@/redux/hooks";
+import {
+  removeItemFromCart,
+  selectCartItems,
+} from "@/redux/features/cart/cartSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
 
 const CartItems = () => {
   const cart = useAppSelector(selectCartItems);
-
+  const dispatch = useAppDispatch();
   return (
     <div>
       {cart && cart.length > 0 ? (
@@ -56,11 +61,38 @@ const CartItems = () => {
                     <strong className="text-black ">
                       {formatCurrency(item.basePrise)}
                     </strong>
+                    <Button
+                      onClick={() =>
+                        dispatch(removeItemFromCart({ id: item.id }))
+                      }
+                      variant="secondary"
+                      className="border"
+                    >
+                      <Trash2 />
+                    </Button>
                   </div>
                 </div>
               </li>
             ))}
           </ul>
+          {/* <div className="flex flex-col justify-end items-end pt-6">
+            <span className="text-accent font-medium">
+              Subtotal:
+              <strong className="text-black">{formatCurrency(subTotal)}</strong>
+            </span>
+            <span className="text-accent font-medium">
+              Delivery:
+              <strong className="text-black">
+                {formatCurrency(deliveryFee)}
+              </strong>
+            </span>
+            <span className="text-accent font-medium">
+              Total:
+              <strong className="text-black">
+                {formatCurrency(subTotal + deliveryFee)}
+              </strong>
+            </span>
+          </div> */}
         </>
       ) : (
         <p className="text-accent">There are no items in your cart. Add some</p>
