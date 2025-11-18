@@ -14,12 +14,12 @@ import Image from "next/image";
 import { Label } from "@/components/ui/label";
 import { ProductWithRelations } from "@/types/product";
 import { Extra, Size, ProductSize } from "@prisma/client";
-import { useAppSelector } from "@/redux/hooks";
-import { selectCartItems } from "@/redux/features/cart/cartSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { addCartItem, selectCartItems } from "@/redux/features/cart/cartSlice";
 
 const AddToCartButton = ({ item }: { item: ProductWithRelations }) => {
   const cart = useAppSelector(selectCartItems);
-
+  const dispatch = useAppDispatch();
   const defualtSize =
     cart.find((element) => element.id === item.id)?.size ||
     item.sizes.find((size) => size.name === ProductSize.SMALL);
@@ -34,7 +34,16 @@ const AddToCartButton = ({ item }: { item: ProductWithRelations }) => {
     selectedExtras.reduce((acc, extra) => acc + extra.price, 0);
 
   const handleAddToCart = () => {
-    // Dispatch action to add item to cart
+    dispatch(
+      addCartItem({
+        id: item.id,
+        name: item.name,
+        basePrise: item.basePrice,
+        image: item.image,
+        size: selectedSize,
+        extras: selectedExtras,
+      })
+    );
   };
   return (
     <Dialog>
