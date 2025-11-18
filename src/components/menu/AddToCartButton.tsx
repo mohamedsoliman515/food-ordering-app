@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,20 +13,34 @@ import { DialogTitle } from "@radix-ui/react-dialog";
 import Image from "next/image";
 import { Label } from "@/components/ui/label";
 import { ProductWithRelations } from "@/types/product";
-import { Extra, Size } from "@prisma/client";
+import { Extra, Size, ProductSize } from "@prisma/client";
+import { useAppSelector } from "@/redux/hooks";
+import { selectCartItems } from "@/redux/features/cart/cartSlice";
+
 const AddToCartButton = ({ item }: { item: ProductWithRelations }) => {
+  const cart = useAppSelector(selectCartItems);
+
+  const defualtSize =
+    cart.find((element) => element.id === item.id)?.size ||
+    item.sizes.find((size) => size.name === ProductSize.SMALL);
+  const defualtExtras =
+    cart.find((element) => element.id === item.id)?.extras || [];
+  const [selectedSize, setSelectedSize] = useState<Size>(defualtSize!);
+  const [selectedExtras, setSelectedExtras] = useState<Extra[]>(defualtExtras!);
+
+  const totalPrice =
+    item.basePrice +
+    selectedSize.price +
+    selectedExtras.reduce((acc, extra) => acc + extra.price, 0);
+
+  const handleAddToCart = () => {
+    // Dispatch action to add item to cart
+  };
   return (
-    // <Button
-    //   type="button"
-    //   size="lg"
-    //   className="mt-4 text-white rounded-full !px-8"
-    // >
-    //   Add To Cart
-    // </Button>
     <Dialog>
       <form>
         <DialogTrigger asChild>
-          <Button className="block mx-auto w-[90%] h-10">Add To Cart</Button>
+          <Button className="block mx-auto w-[90%] h-10">Add To Cart </Button>
         </DialogTrigger>
 
         <DialogContent className="sm:max-w-[425px] max-h-[95vh] overflow-y-auto">
@@ -45,14 +60,23 @@ const AddToCartButton = ({ item }: { item: ProductWithRelations }) => {
               <Label className="block" htmlFor="pick-size">
                 Pick your size
               </Label>
-              <PickSize sizes={item.sizes} item={item} />
+              <PickSize
+                sizes={item.sizes}
+                item={item}
+                selectedSize={selectedSize}
+                setSelectedSize={setSelectedSize}
+              />
             </div>
 
             <div className="space-y-4 text-center">
               <Label className="block" htmlFor="pick-size">
                 Extras
               </Label>
-              <Extras extras={item.extras} />
+              <Extras
+                extras={item.extras}
+                selectedExtras={selectedExtras}
+                setSelectedExtras={setSelectedExtras}
+              />
             </div>
           </div>
 
@@ -60,8 +84,12 @@ const AddToCartButton = ({ item }: { item: ProductWithRelations }) => {
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button type="submit" className="w-full h-10">
-              Add To Cart
+            <Button
+              type="submit"
+              className="w-full h-10"
+              onClick={handleAddToCart}
+            >
+              Add To Cart {formatCurrency(totalPrice)}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -75,13 +103,18 @@ export default AddToCartButton;
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { formatCurrency } from "@/lib/formatCurrency";
 import { Checkbox } from "../ui/checkbox";
+import { useState } from "react";
 
 export function PickSize({
   sizes,
   item,
+  selectedSize,
+  setSelectedSize,
 }: {
   sizes: Size[];
   item: ProductWithRelations;
+  selectedSize: Size;
+  setSelectedSize: React.Dispatch<React.SetStateAction<Size>>;
 }) {
   return (
     <RadioGroup defaultValue="comfortable">
@@ -90,7 +123,12 @@ export function PickSize({
           key={size.id}
           className="flex items-center space-x-2 border border-gray-100 rounded-md p-4"
         >
-          <RadioGroupItem value={size.name} id={size.id} />
+          <RadioGroupItem
+            value={selectedSize.name}
+            id={size.id}
+            checked={selectedSize.id === size.id}
+            onClick={() => setSelectedSize(size)}
+          />
           <Label htmlFor={size.id}>
             {size.name} {formatCurrency(size.price + item.basePrice)}
           </Label>
@@ -99,7 +137,26 @@ export function PickSize({
     </RadioGroup>
   );
 }
-export function Extras({ extras }: { extras: Extra[] }) {
+
+export function Extras({
+  extras,
+  selectedExtras,
+  setSelectedExtras,
+}: {
+  extras: Extra[];
+  selectedExtras: Extra[];
+  setSelectedExtras: React.Dispatch<React.SetStateAction<Extra[]>>;
+}) {
+  const handleExtra = (extra: Extra) => {
+    if (selectedExtras.find((e) => e.id === extra.id)) {
+      setSelectedExtras((prevSelectedExtras) =>
+        prevSelectedExtras.filter((e) => e.id !== extra.id)
+      );
+    } else {
+      setSelectedExtras((prevSelectedExtras) => [...prevSelectedExtras, extra]);
+    }
+  };
+
   return (
     <RadioGroup defaultValue="comfortable">
       {extras.map((extra) => (
@@ -107,7 +164,11 @@ export function Extras({ extras }: { extras: Extra[] }) {
           key={extra.id}
           className="flex items-center space-x-2 border border-gray-100 rounded-md p-4"
         >
-          <Checkbox value={extra.name} id={extra.id} />
+          <Checkbox
+            checked={Boolean(selectedExtras.find((e) => e.id === extra.id))}
+            onClick={() => handleExtra(extra)}
+            id={extra.id}
+          />
           <Label
             className="text-sm text-accent font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             htmlFor={extra.id}

@@ -1,6 +1,6 @@
+// ISR :=> incremental static regeneration
 import { db } from "@/lib/prisma";
 import { cache } from "@/lib/cache";
-
 export const getProductsByCategory = cache(
   () => {
     const products = db.category.findMany({
