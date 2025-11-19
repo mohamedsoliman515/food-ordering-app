@@ -15,10 +15,18 @@ import { Label } from "@/components/ui/label";
 import { ProductWithRelations } from "@/types/product";
 import { Extra, Size, ProductSize } from "@prisma/client";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { addCartItem, selectCartItems } from "@/redux/features/cart/cartSlice";
+import {
+  addCartItem,
+  removeCartItem,
+  removeItemFromCart,
+  selectCartItems,
+} from "@/redux/features/cart/cartSlice";
+import { getItemQuantity } from "@/lib/cart";
 
 const AddToCartButton = ({ item }: { item: ProductWithRelations }) => {
   const cart = useAppSelector(selectCartItems);
+
+  const quantity = getItemQuantity(item.id, cart);
   const dispatch = useAppDispatch();
   const defualtSize =
     cart.find((element) => element.id === item.id)?.size ||
@@ -38,7 +46,7 @@ const AddToCartButton = ({ item }: { item: ProductWithRelations }) => {
       addCartItem({
         id: item.id,
         name: item.name,
-        basePrise: item.basePrice,
+        basePrice: item.basePrice,
         image: item.image,
         size: selectedSize,
         extras: selectedExtras,
@@ -93,13 +101,22 @@ const AddToCartButton = ({ item }: { item: ProductWithRelations }) => {
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button
-              type="submit"
-              className="w-full h-10"
-              onClick={handleAddToCart}
-            >
-              Add To Cart {formatCurrency(totalPrice)}
-            </Button>
+            {quantity === 0 ? (
+              <Button
+                type="submit"
+                className="w-full h-10"
+                onClick={handleAddToCart}
+              >
+                Add To Cart {formatCurrency(totalPrice)}
+              </Button>
+            ) : (
+              <ChooseQuantity
+                quantity={quantity}
+                item={item}
+                selectedExtras={selectedExtras}
+                selectedSize={selectedSize}
+              />
+            )}
           </DialogFooter>
         </DialogContent>
       </form>
@@ -189,3 +206,54 @@ export function Extras({
     </RadioGroup>
   );
 }
+const ChooseQuantity = ({
+  quantity,
+  item,
+  selectedExtras,
+  selectedSize,
+}: {
+  quantity: number;
+  selectedExtras: Extra[];
+  selectedSize: Size;
+  item: ProductWithRelations;
+}) => {
+  const dispatch = useAppDispatch();
+  return (
+    <div className="flex items-center flex-col gap-2 mt-4 w-full">
+      <div className="flex items-center justify-center gap-2">
+        <Button
+          variant="outline"
+          onClick={() => dispatch(removeCartItem({ id: item.id }))}
+        >
+          -
+        </Button>
+        <div>
+          <span className="text-black">{quantity} in cart</span>
+        </div>
+        <Button
+          variant="outline"
+          onClick={() =>
+            dispatch(
+              addCartItem({
+                basePrice: item.basePrice,
+                id: item.id,
+                image: item.image,
+                name: item.name,
+                extras: selectedExtras,
+                size: selectedSize,
+              })
+            )
+          }
+        >
+          +
+        </Button>
+      </div>
+      <Button
+        size="sm"
+        onClick={() => dispatch(removeItemFromCart({ id: item.id }))}
+      >
+        Remove
+      </Button>
+    </div>
+  );
+};
