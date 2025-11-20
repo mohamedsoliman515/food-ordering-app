@@ -8,10 +8,13 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
+import DetailsOfReceipt from "./DetailsOfReceipt";
 
 const CartItems = () => {
   const cart = useAppSelector(selectCartItems);
   const dispatch = useAppDispatch();
+  const subTotal = 5;
+  const deliveryFee = 5;
   return (
     <div>
       {cart && cart.length > 0 ? (
@@ -59,7 +62,7 @@ const CartItems = () => {
                   </div>
                   <div className="flex-1 flex items-center gap-4 justify-end">
                     <strong className="text-black ">
-                      {formatCurrency(item.basePrise)}
+                      {formatCurrency(item.basePrice)}
                     </strong>
                     <Button
                       onClick={() =>
@@ -75,24 +78,7 @@ const CartItems = () => {
               </li>
             ))}
           </ul>
-          {/* <div className="flex flex-col justify-end items-end pt-6">
-            <span className="text-accent font-medium">
-              Subtotal:
-              <strong className="text-black">{formatCurrency(subTotal)}</strong>
-            </span>
-            <span className="text-accent font-medium">
-              Delivery:
-              <strong className="text-black">
-                {formatCurrency(deliveryFee)}
-              </strong>
-            </span>
-            <span className="text-accent font-medium">
-              Total:
-              <strong className="text-black">
-                {formatCurrency(subTotal + deliveryFee)}
-              </strong>
-            </span>
-          </div> */}
+          <DetailsOfReceipt subTotal={subTotal} deliveryFee={deliveryFee} />
         </>
       ) : (
         <p className="text-accent">There are no items in your cart. Add some</p>
