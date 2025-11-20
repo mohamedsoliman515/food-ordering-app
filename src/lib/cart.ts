@@ -1,5 +1,5 @@
 import { CartItem } from "@/redux/features/cart/cartSlice";
-
+const deliveryFee = 5;
 export const getCartQuantity = (cart: CartItem[]) => {
   return cart.reduce((total, item) => total + (item.quantity || 1), 0);
 };
@@ -17,4 +17,7 @@ export const getSubTotal = (cart: CartItem[]) => {
 
     return total + itemTotal;
   }, 0);
+};
+export const getTotalAmount = (cart: CartItem[]) => {
+  return getSubTotal(cart) + deliveryFee;
 };
