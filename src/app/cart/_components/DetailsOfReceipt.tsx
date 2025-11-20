@@ -10,17 +10,17 @@ const DetailsOfReceipt = ({
   return (
     <div className="flex flex-col justify-end  pt-6 border border-accent p-4 rounded-[8px]">
       <span className="text-accent font-medium">
-        Subtotal:
+        Subtotal :
         <strong className="text-black  pl-1">{formatCurrency(subTotal)}</strong>
       </span>
       <span className="text-accent font-medium">
-        Delivery:
+        Delivery :
         <strong className="text-black pl-1">
           {formatCurrency(deliveryFee)}
         </strong>
       </span>
       <span className="text-accent font-medium">
-        Total:
+        Total :
         <strong className="text-black pl-1">
           {formatCurrency(subTotal + deliveryFee)}
         </strong>

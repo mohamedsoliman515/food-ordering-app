@@ -9,11 +9,13 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import DetailsOfReceipt from "./DetailsOfReceipt";
+import { getSubTotal } from "@/lib/cart";
 
 const CartItems = () => {
   const cart = useAppSelector(selectCartItems);
   const dispatch = useAppDispatch();
-  const subTotal = 5;
+
+  const subTotal = getSubTotal(cart);
   const deliveryFee = 5;
   return (
     <div>
